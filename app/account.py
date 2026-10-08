@@ -102,5 +102,9 @@ def logout(request: Request, response: Response, db=Depends(get_db)):
 
 
 @router.get("/me")
-def me(user=Depends(auth.require_user)):
+def me(response: Response, user=Depends(auth.current_user)):
+    """내 정보, 비로그인 시 null 반환"""
+    response.headers["Cache-Control"] = "no-store"
+    if user is None:
+        return None
     return {"login_id": user["login_id"], "is_admin": bool(user["is_admin"])}
